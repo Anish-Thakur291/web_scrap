@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Browse and search scraped Ingredients Network company profiles.">
+  <title>Ingredients Network | Company Directory</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}">
+      <span class="brand-mark" aria-hidden="true">IN</span>
+      <span>Ingredients Network<span class="brand-subtitle">Company directory</span></span>
+    </a>
+    <span class="source-label"><span class="status-dot"></span> Scraped company data</span>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro">
+      <p class="eyebrow">SUPPLIER DIRECTORY</p>
+      <h1>Explore food ingredient companies</h1>
+      <p class="intro-copy">Search company profiles, contact details, business activities, categories, and events.</p>
+    </section>
+
+    <section class="directory" aria-labelledby="directory-heading">
+      <div class="directory-heading">
+        <div>
+          <h2 id="directory-heading">Company profiles</h2>
+          <p class="result-count" aria-live="polite">
+            {% if total_companies %}
+              Showing {{ first_result }}–{{ last_result }} of {{ total_companies }} companies
+            {% else %}
+              No companies found
+            {% endif %}
+          </p>
+        </div>
+        <form class="search-form" action="{{ url_for('index') }}" method="get" role="search">
+          <label class="sr-only" for="company-search">Search company profiles</label>
+          <input id="company-search" name="q" type="search" value="{{ search_query }}"
+                 placeholder="Search companies, categories, events…" autocomplete="off">
+          <button type="submit">Search</button>
+          {% if search_query %}
+            <a class="clear-search" href="{{ url_for('index') }}">Clear</a>
+          {% endif %}
+        </form>
+      </div>
+
+      {% if companies %}
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Company profiles table; scroll horizontally to see all fields">
+          <table>
+            <thead>
+              <tr>
+                {% for column in columns %}
+                  <th scope="col">{{ column }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for company in companies %}
+                <tr>
+                  {% for column in columns %}
+                    {% set value = company[column] %}
+                    <td>
+                      {% if column == "Website" and value.startswith(("http://", "https://")) %}
+                        <a class="website-link" href="{{ value }}" target="_blank" rel="noopener noreferrer" title="{{ value }}">{{ value }}</a>
+                      {% elif value == "Not listed on profile" %}
+                        <span class="not-listed">{{ value }}</span>
+                      {% elif value %}
+                        <span class="cell-value" title="{{ value }}">{{ value }}</span>
+                      {% else %}
+                        <span class="not-listed">—</span>
+                      {% endif %}
+                    </td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <span class="empty-icon" aria-hidden="true">⌕</span>
+          <h3>No matching companies</h3>
+          <p>Try another company name, category, business activity, or location.</p>
+        </div>
+      {% endif %}
+
+      {% if page_count > 1 %}
+        <nav class="pagination" aria-label="Company pages">
+          <span class="page-indicator">Page {{ page }} of {{ page_count }}</span>
+          <div class="page-controls">
+            {% if page > 1 %}
+              <a class="page-link" href="{{ url_for('index', q=search_query, page=page - 1) }}" rel="prev">← Previous</a>
+            {% else %}
+              <span class="page-link disabled" aria-disabled="true">← Previous</span>
+            {% endif %}
+            {% if page < page_count %}
+              <a class="page-link next" href="{{ url_for('index', q=search_query, page=page + 1) }}" rel="next">Next →</a>
+            {% else %}
+              <span class="page-link disabled" aria-disabled="true">Next →</span>
+            {% endif %}
+          </div>
+        </nav>
+      {% endif %}
+    </section>
+
+    <footer class="page-footer">
+      <span>Data sourced from Ingredients Network company profiles.</span>
+      <span>Missing details are marked “Not listed on profile”.</span>
+    </footer>
+  </main>
+</body>
+</html>

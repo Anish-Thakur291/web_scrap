@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Company data unavailable | Ingredients Network</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="error-shell">
+    <p class="eyebrow">DATA SOURCE ERROR</p>
+    <h1>Company data is unavailable</h1>
+    <p>The directory could not read its CSV data source. Check that the cleaned CSV exists and includes the expected company fields.</p>
+    <details>
+      <summary>Technical details</summary>
+      <pre>{{ error }}</pre>
+    </details>
+  </main>
+</body>
+</html>
